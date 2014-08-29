@@ -40,15 +40,14 @@ public class main extends Activity {
         tvDataUsageMobile = (TextView) findViewById(R.id.tvDataUsageMobile);
         tvDataUsageTotal = (TextView) findViewById(R.id.tvDataUsageTotal);
 
-        initAdapter();
-        lvApplications = (ListView) findViewById(R.id.lvInstallApplication);
-        lvApplications.setAdapter(adapterApplications);
-
         if (TrafficStats.getTotalRxBytes() != TrafficStats.UNSUPPORTED && TrafficStats.getTotalTxBytes() != TrafficStats.UNSUPPORTED) {
             handler.postDelayed(runnable, 0);
+
+            initAdapter();
+            lvApplications = (ListView) findViewById(R.id.lvInstallApplication);
+            lvApplications.setAdapter(adapterApplications);
         } else {
-            tvSupported.setText("Not supported");
-            tvSupported.setTextColor(ColorStateList.valueOf(0xFFFF0000));
+            tvSupported.setVisibility(View.VISIBLE);
         }
     }
 
