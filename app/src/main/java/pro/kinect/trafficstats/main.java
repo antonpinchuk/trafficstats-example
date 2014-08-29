@@ -90,7 +90,7 @@ public class main extends Activity {
             PackageManager packageManager = getApplicationContext().getPackageManager();
             String name = packageManager.getApplicationLabel(app).toString();
             Drawable icon = packageManager.getApplicationIcon(app);
-            ApplicationItem application = ApplicationItem.create(app.uid, name, icon);
+            ApplicationItem application = ApplicationItem.create(app.uid, "  " + name, icon);
             if(application != null) {
                 _adapter.add(application);
             }

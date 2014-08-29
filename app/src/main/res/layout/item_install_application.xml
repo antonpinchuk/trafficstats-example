@@ -20,6 +20,7 @@
         android:id="@+id/tvAppTraffic"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:gravity="center"/>
 
 </RelativeLayout>
