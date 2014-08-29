@@ -4,14 +4,12 @@ import android.app.Activity;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.net.TrafficStats;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,7 +59,13 @@ public class main extends Activity {
 
                 ApplicationItem app =  getItem(position);
 
-                tvAppName.setCompoundDrawablesWithIntrinsicBounds(app.Icon, null , null, null);
+                final int iconSize = Math.round(32 * getResources().getDisplayMetrics().density);
+                tvAppName.setCompoundDrawablesWithIntrinsicBounds(
+                    new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(
+                        ((BitmapDrawable) app.Icon).getBitmap(), iconSize, iconSize, true)
+                    ),
+                    null, null, null
+                );
                 tvAppName.setText(app.Name);
                 tvAppTraffic.setText(Long.toString(app.total / 1024) + " Kb");
 
@@ -77,7 +81,7 @@ public class main extends Activity {
 
         lvApplications.setAdapter(adapterApplications);
 
-        if (TrafficStats.getTotalTxBytes() != TrafficStats.UNSUPPORTED) {
+        if (TrafficStats.getTotalRxBytes() != TrafficStats.UNSUPPORTED && TrafficStats.getTotalTxBytes() != TrafficStats.UNSUPPORTED) {
             handler.postDelayed(runnable, 0);
         } else {
             tvSupported.setText("Not supported");

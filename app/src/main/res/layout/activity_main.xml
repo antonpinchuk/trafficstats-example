@@ -125,6 +125,10 @@
         android:id="@+id/lvInstallApplication"
         android:layout_below="@+id/tableLayout"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:paddingTop="10dp"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="4dp"
+        android:drawSelectorOnTop="false" />
 
 </RelativeLayout>
