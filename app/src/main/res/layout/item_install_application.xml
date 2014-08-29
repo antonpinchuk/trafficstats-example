@@ -9,7 +9,8 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Medium Text"
-        android:id="@+id/tvAppName" />
+        android:id="@+id/tvAppName"
+        android:gravity="center"/>
 
     <TextView
         android:layout_width="wrap_content"

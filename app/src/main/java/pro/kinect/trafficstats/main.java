@@ -4,23 +4,23 @@ import android.app.Activity;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.net.TrafficStats;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 
 
 public class main extends Activity {
@@ -30,25 +30,7 @@ public class main extends Activity {
 
     private long totalCurrent = 0;
 
-    private class Application {
-        long tx = 0;
-        long rx = 0;
-        long total = 0;
-        int uid;
-        String Name;
-
-        Application(int _uid ,String _name){
-            uid = _uid; Name = _name;
-        }
-
-        public void update(){
-            tx = TrafficStats.getUidTxBytes(uid);
-            rx = TrafficStats.getUidRxBytes(uid);
-            total = tx + rx;
-        }
-    }
-
-    private ArrayList<Application> Applications =  new ArrayList();
+    private ArrayList<ApplicationItem> Applications =  new ArrayList();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,14 +44,7 @@ public class main extends Activity {
 
         lvApplications = (ListView) findViewById(R.id.lvInstallApplication);
 
-        if (TrafficStats.getTotalTxBytes() != TrafficStats.UNSUPPORTED) {
-            handler.postDelayed(runnable, 0);
-        } else {
-            tvSupported.setText("Not supported");
-            tvSupported.setTextColor(ColorStateList.valueOf(0xFFFF0000));
-        }
-
-        final ArrayAdapter<Application> adapterApplications = new ArrayAdapter<Application>(getApplicationContext(), R.layout.item_install_application) {
+        final ArrayAdapter<ApplicationItem> adapterApplications = new ArrayAdapter<ApplicationItem>(getApplicationContext(), R.layout.item_install_application) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
 
@@ -84,8 +59,9 @@ public class main extends Activity {
                 TextView tvAppName = (TextView) result.findViewById(R.id.tvAppName);
                 TextView tvAppTraffic = (TextView) result.findViewById(R.id.tvAppTraffic);
 
-                Application app = (Application) getItem(position);
+                ApplicationItem app =  getItem(position);
 
+                tvAppName.setCompoundDrawablesWithIntrinsicBounds(app.Icon, null , null, null);
                 tvAppName.setText(app.Name);
                 tvAppTraffic.setText(Long.toString(app.total / 1024) + " Kb");
 
@@ -97,22 +73,35 @@ public class main extends Activity {
             }
         };
 
+        updateAdapter(adapterApplications);
+
+        lvApplications.setAdapter(adapterApplications);
+
+        if (TrafficStats.getTotalTxBytes() != TrafficStats.UNSUPPORTED) {
+            handler.postDelayed(runnable, 0);
+        } else {
+            tvSupported.setText("Not supported");
+            tvSupported.setTextColor(ColorStateList.valueOf(0xFFFF0000));
+        }
+    }
+
+    public void updateAdapter(ArrayAdapter<ApplicationItem> _adapter){
         for (ApplicationInfo app : getApplicationContext().getPackageManager().getInstalledApplications(0)) {
             PackageManager packageManager = getApplicationContext().getPackageManager();
             String name = packageManager.getApplicationLabel(app).toString();
-            Application application = new Application(app.uid, name);
-            application.update();
-            if( (application.total / 1024) > 0) adapterApplications.add(application);
+            Drawable icon = packageManager.getApplicationIcon(app);
+            ApplicationItem application = ApplicationItem.create(app.uid, name, icon);
+            if(application != null) {
+                _adapter.add(application);
+            }
         }
 
-        adapterApplications.sort(new Comparator<Application>() {
+        _adapter.sort(new Comparator<ApplicationItem>() {
             @Override
-            public int compare(Application lhs, Application rhs) {
+            public int compare(ApplicationItem lhs, ApplicationItem rhs) {
                 return (int)(rhs.total - lhs.total);
             }
         });
-
-        lvApplications.setAdapter(adapterApplications);
     }
 
     public Handler handler = new Handler();
@@ -128,6 +117,12 @@ public class main extends Activity {
             if(totalCurrent != total) {
                 totalCurrent = total;
 
+                /*
+                ArrayAdapter<Application> adapter = (ArrayAdapter<Application>) lvApplications.getAdapter();
+                adapter.clear();
+                updateAdapter(adapter);
+                adapter.notifyDataSetChanged();
+                */
 
             }
 
