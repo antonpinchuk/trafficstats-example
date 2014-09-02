@@ -43,6 +43,7 @@ public class main extends Activity {
         if (TrafficStats.getTotalRxBytes() != TrafficStats.UNSUPPORTED && TrafficStats.getTotalTxBytes() != TrafficStats.UNSUPPORTED) {
             handler.postDelayed(runnable, 0);
 
+
             initAdapter();
             lvApplications = (ListView) findViewById(R.id.lvInstallApplication);
             lvApplications.setAdapter(adapterApplications);
@@ -68,6 +69,7 @@ public class main extends Activity {
     };
 
     public void initAdapter() {
+
         adapterApplications = new ArrayAdapter<ApplicationItem>(getApplicationContext(), R.layout.item_install_application) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
@@ -83,16 +85,17 @@ public class main extends Activity {
                 TextView tvAppName = (TextView) result.findViewById(R.id.tvAppName);
                 TextView tvAppTraffic = (TextView) result.findViewById(R.id.tvAppTraffic);
 
+                // TODO resize once
                 final int iconSize = Math.round(32 * getResources().getDisplayMetrics().density);
                 tvAppName.setCompoundDrawablesWithIntrinsicBounds(
                     //app.icon,
                     new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(
-                        ((BitmapDrawable) app.icon).getBitmap(), iconSize, iconSize, true)
+                        ((BitmapDrawable) app.getIcon(getApplicationContext().getPackageManager())).getBitmap(), iconSize, iconSize, true)
                     ),
                     null, null, null
                 );
-                tvAppName.setText(app.name);
-                tvAppTraffic.setText(Long.toString(app.dataUsage / 1024) + " Kb");
+                tvAppName.setText(app.getApplicationLabel(getApplicationContext().getPackageManager()));
+                tvAppTraffic.setText(Integer.toString(app.getUsageKb()) + " Kb");
 
                 return result;
             }
@@ -108,39 +111,27 @@ public class main extends Activity {
         };
 
 // TODO: resize icon once
-//        final int iconSize = Math.round(32 * getResources().getDisplayMetrics().density);
         for (ApplicationInfo app : getApplicationContext().getPackageManager().getInstalledApplications(0)) {
-            PackageManager packageManager = getApplicationContext().getPackageManager();
-            String name = packageManager.getApplicationLabel(app).toString();
-            Drawable icon = packageManager.getApplicationIcon(app);
-            ApplicationItem item = ApplicationItem.create(
-                app.uid,
-                "  " + name,
-                icon
-//                new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(
-//                    ((BitmapDrawable) icon).getBitmap(), iconSize, iconSize, true)
-//                )
-            );
-            // Just ignore items with zero consumption to avoid writing custom filter
-            // for ArrayAdapter to launch on each update
-            if (item.dataUsage > 0) {
+            ApplicationItem item = ApplicationItem.create(app);
+            if(item != null) {
                 adapterApplications.add(item);
             }
         }
     }
 
-    public void updateAdapter() {
+   public void updateAdapter() {
         for (int i = 0, l = adapterApplications.getCount(); i < l; i++) {
             ApplicationItem app = adapterApplications.getItem(i);
             app.update();
         }
+
         adapterApplications.sort(new Comparator<ApplicationItem>() {
             @Override
             public int compare(ApplicationItem lhs, ApplicationItem rhs) {
-                return (int)(rhs.dataUsage - lhs.dataUsage);
+                return (int)(rhs.getUsageKb() - lhs.getUsageKb());
             }
         });
         adapterApplications.notifyDataSetChanged();
-    }
+   }
 
 }
