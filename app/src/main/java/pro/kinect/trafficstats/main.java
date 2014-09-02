@@ -2,11 +2,8 @@ package pro.kinect.trafficstats;
 
 import android.app.Activity;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.net.TrafficStats;
@@ -18,6 +15,7 @@ import android.widget.Filter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import java.util.Comparator;
 
 
@@ -33,6 +31,7 @@ public class main extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Crashlytics.start(this);
         setContentView(R.layout.activity_main);
 
         tvSupported = (TextView) findViewById(R.id.tvSupported);
@@ -95,7 +94,7 @@ public class main extends Activity {
                     null, null, null
                 );
                 tvAppName.setText(app.getApplicationLabel(getApplicationContext().getPackageManager()));
-                tvAppTraffic.setText(Integer.toString(app.getUsageKb()) + " Kb");
+                tvAppTraffic.setText(Integer.toString(app.getTotalUsageKb()) + " Kb");
 
                 return result;
             }
@@ -128,7 +127,7 @@ public class main extends Activity {
         adapterApplications.sort(new Comparator<ApplicationItem>() {
             @Override
             public int compare(ApplicationItem lhs, ApplicationItem rhs) {
-                return (int)(rhs.getUsageKb() - lhs.getUsageKb());
+                return (int)(rhs.getTotalUsageKb() - lhs.getTotalUsageKb());
             }
         });
         adapterApplications.notifyDataSetChanged();

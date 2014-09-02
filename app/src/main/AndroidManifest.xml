@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="pro.kinect.trafficstats" >
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -15,6 +17,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
 
+        <receiver android:name=".NetworkEventReceiver" android:enabled="true" android:exported="false">
+            <intent-filter>
+                <action android:name="android.net.ConnectivityManager.CONNECTIVITY_ACTION" />
+                <action android:name="android.net.wifi.STATE_CHANGE" />
+            </intent-filter>
+        </receiver>
+        <meta-data android:name="com.crashlytics.ApiKey" android:value="8a6c1920b96dfedd920572d2bb65c3c80f325e13"/>
+
+    </application>
 </manifest>
