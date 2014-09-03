@@ -15,7 +15,6 @@ import android.widget.Filter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.crashlytics.android.Crashlytics;
 import java.util.Comparator;
 
 
@@ -31,7 +30,6 @@ public class main extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Crashlytics.start(this);
         setContentView(R.layout.activity_main);
 
         tvSupported = (TextView) findViewById(R.id.tvSupported);
@@ -84,7 +82,7 @@ public class main extends Activity {
                 TextView tvAppName = (TextView) result.findViewById(R.id.tvAppName);
                 TextView tvAppTraffic = (TextView) result.findViewById(R.id.tvAppTraffic);
 
-                // TODO resize once
+                // TODO: resize once
                 final int iconSize = Math.round(32 * getResources().getDisplayMetrics().density);
                 tvAppName.setCompoundDrawablesWithIntrinsicBounds(
                     //app.icon,
